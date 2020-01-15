@@ -18,11 +18,17 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         PSQL psqlConn = new PSQL(dbUserid, dbPwd, "urls", dburl);
+        System.out.print("Please enter your userid: ");
+        int currUserId = sc.nextInt();
+        sc.nextLine();
+        String smallUrl = "";
+
         while(true){
             System.out.println("Menu:");
             System.out.println("1. Create Small URL from Full URL, Press 1");
             System.out.println("2. Retrieve Full URL with ShortURL, Press 2");
-            System.out.println("3. Quit Program, Press Q");
+            System.out.println("3. Update Full URL with ShortURL, Press 3");
+            System.out.println("4. Quit Program, Press Q");
             String input = sc.nextLine();
             if(input.length()>1){
                 System.out.println("Error: Input length is too long");
@@ -35,14 +41,14 @@ public class Main {
                     case '1' :
                         System.out.println("Please type in the full url:");
                         String fullurl = sc.nextLine();
-                        Long rowID = psqlConn.insertURL(fullurl);
+                        Long rowID = psqlConn.insertURL(fullurl,currUserId);
                         String shortURL = B62EncDec.toBase62(rowID);
                         System.out.println("Small URL for "+ fullurl +" is "+ "www.smallurl.com/" + shortURL+ "\n");
 
                         break;
                     case '2':
                         System.out.println("Please type in the small url:");
-                        String smallUrl = sc.nextLine();
+                        smallUrl = sc.nextLine();
                         //String prefix = smallUrl.substring(0, 17);
                         if(smallUrl.length()<18||  !smallUrl.substring(0, 17).equals("www.smallurl.com/")){
                             System.out.println("Invalid Small Url, please try again\n");
@@ -55,6 +61,27 @@ public class Main {
                             }else{
                                 System.out.println("Full URL for "+ smallUrl +" is "+ fullUrl+  "\n");
                             }
+                        }
+                        break;
+                    case '3':
+                        System.out.println("To update the full url, please type in the small url:");
+                        smallUrl = sc.nextLine();
+                        System.out.println("Please type in the new full url:");
+                        String newUrl = sc.nextLine();
+                        //String prefix = smallUrl.substring(0, 17);
+                        if(smallUrl.length()<18||  !smallUrl.substring(0, 17).equals("www.smallurl.com/")){
+                            System.out.println("Invalid Small Url, please try again\n");
+                        } else {
+                            String suffix = smallUrl.substring(17, smallUrl.length());
+                            long decodedRowId = B62EncDec.toBase10(suffix);
+                            long rowid = psqlConn.updateURL(decodedRowId, newUrl, currUserId);
+                            if(rowid != -1){
+                                String newShortURL = B62EncDec.toBase62(rowid);
+                                System.out.println("Update Succesful, Small URL for "+ newUrl +" is "+ "www.smallurl.com/" + newShortURL+ "\n");
+                            } else {
+                                System.out.println("Update Fail, no record found. Please check your user id or small url\n");
+                            }
+
                         }
                         break;
                     case 'Q':

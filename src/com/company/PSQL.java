@@ -1,6 +1,7 @@
 package com.company;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class PSQL {
 
@@ -61,7 +62,7 @@ public class PSQL {
     //function uses the rowID to return the full url
     public String retriveFullUrl(Long rowId) {
 
-        String SQL = "SELECT full_url FROM url_log WHERE Id = " + rowId+";";
+        String SQL = "SELECT full_url FROM url_records WHERE Id = " + rowId+";";
 
         String full_url = "";
         try (Connection conn = connect();
@@ -113,17 +114,52 @@ public class PSQL {
 
     }
 
+    public long updateURL(long rowid, String fullurl, int currUserId) {
+        String SQL = "UPDATE url_records "
+                + "SET full_url = ? "
+                + "WHERE id = ? AND user_id = ? ";
+
+        int affectedrows = 0;
+        long affectedRowId = 0;
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(SQL)) {
+
+            pstmt.setString(1, fullurl);
+            pstmt.setLong(2, rowid);
+            pstmt.setInt(3, currUserId);
+
+            affectedrows = pstmt.executeUpdate();
+            //System.out.println("affected rows: "+ affectedrows);
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+
+        System.out.println(affectedRowId);
+
+        if(affectedrows == 0){
+            return -1;
+        } else {
+            return rowid;
+        }
+
+    }
+
 
     //function inserts full url into db and returns the Row ID
-    public long insertURL(String long_url) {
-        String SQL = "INSERT INTO url_log(full_url) "
-                + "VALUES(?)";
+    public long insertURL(String long_url, int currUserId) {
+        String SQL = "INSERT INTO url_records(full_url,date,user_id)"
+                + "VALUES(?,?,?)";
 
         long id = 0;
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, long_url);
+            pstmt.setObject(2, LocalDate.now());
+            pstmt.setInt(3, currUserId);
 
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
