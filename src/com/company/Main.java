@@ -7,16 +7,17 @@ public class Main {
     public static void main(String[] args) {
         String dbUserid = args[0];
         String dbPwd = args[1];
+        String dburl = args[2];
 
-        menu(dbUserid, dbPwd);
+        menu(dbUserid, dbPwd, dburl);
 
     }
 
     //function displays menu in console
-    public static void menu(String dbUserid, String dbPwd){
+    public static void menu(String dbUserid, String dbPwd, String dburl){
 
         Scanner sc = new Scanner(System.in);
-        PSQL psqlConn = new PSQL(dbUserid, dbPwd, "urls");
+        PSQL psqlConn = new PSQL(dbUserid, dbPwd, "urls", dburl);
         while(true){
             System.out.println("Menu:");
             System.out.println("1. Create Small URL from Full URL, Press 1");

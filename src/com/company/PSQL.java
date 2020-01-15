@@ -4,15 +4,16 @@ import java.sql.*;
 
 public class PSQL {
 
-    private String url = "jdbc:postgresql://54.201.81.141/";
+    private String url = "jdbc:postgresql://";
     private String user;
     private String password;
 
 
-    public PSQL(String userID, String pwd, String dbName){
+    public PSQL(String userID, String pwd, String dbName, String dburl){
         this.user = userID;
         this.password = pwd;
-        this.url = this.url+dbName;
+        this.url = this.url+ dburl +"/"+ dbName;
+
     }
 
     //function creates connection to db
