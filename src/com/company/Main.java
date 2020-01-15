@@ -28,7 +28,8 @@ public class Main {
             System.out.println("1. Create Small URL from Full URL, Press 1");
             System.out.println("2. Retrieve Full URL with ShortURL, Press 2");
             System.out.println("3. Update Full URL with ShortURL, Press 3");
-            System.out.println("4. Quit Program, Press Q");
+            System.out.println("4. Delete ShortURL Record, Press 3");
+            System.out.println("5. Quit Program, Press Q");
             String input = sc.nextLine();
             if(input.length()>1){
                 System.out.println("Error: Input length is too long");
@@ -82,6 +83,25 @@ public class Main {
                                 System.out.println("Update Fail, no record found. Please check your user id or small url\n");
                             }
 
+                        }
+                        break;
+
+                    case '4':
+                        System.out.println("Please type in the small url to delete:");
+                        smallUrl = sc.nextLine();
+
+                        if(smallUrl.length()<18||  !smallUrl.substring(0, 17).equals("www.smallurl.com/")){
+                            System.out.println("Invalid Small Url, please try again\n");
+                        } else {
+                            String suffix = smallUrl.substring(17, smallUrl.length());
+                            long decodedRowId = B62EncDec.toBase10(suffix);
+
+                            boolean removed = psqlConn.deleteFullURLRecord(decodedRowId, currUserId);
+                            if(removed == false){
+                                System.out.println("Error: Unable to delete, Invalid Small URL or userid, Please try again\n");
+                            }else{
+                                System.out.println("Record removed\n");
+                            }
                         }
                         break;
                     case 'Q':

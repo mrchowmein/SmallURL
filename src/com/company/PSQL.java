@@ -106,7 +106,7 @@ public class PSQL {
             for (int i = 1; i <= columnsNumber; i++) {
                 if (i > 1) System.out.print(",  ");
                 String columnValue = rs.getString(i);
-               // System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                // System.out.print(columnValue + " " + rsmd.getColumnName(i));
                 System.out.print(columnValue);
             }
             System.out.println("");
@@ -114,6 +114,7 @@ public class PSQL {
 
     }
 
+    //function updates the full url given the correct row and curuserid
     public long updateURL(long rowid, String fullurl, int currUserId) {
         String SQL = "UPDATE url_records "
                 + "SET full_url = ? "
@@ -179,5 +180,35 @@ public class PSQL {
 
         return id;
     }
+
+    //function deletes records with the matching userid and rowid
+    public boolean deleteFullURLRecord(long rowid, int currUserid) {
+        String SQL = "DELETE FROM url_records WHERE user_id = ? and id = ? ";
+
+        int affectedrows = 0;
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(SQL)) {
+
+            pstmt.setInt(1, currUserid);
+            pstmt.setLong(2, rowid);
+
+            affectedrows = pstmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        if(affectedrows >= 1){
+            if(affectedrows > 1){
+                System.out.println("Warning, records deleted: "+affectedrows);
+                return true;
+            }
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
 
 }
