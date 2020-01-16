@@ -18,7 +18,7 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         PSQL psqlConn = new PSQL(dbUserid, dbPwd, "urls", dburl);
-        System.out.print("Please enter your userid: ");
+        System.out.print("Please enter your userid# (int): ");
         int currUserId = sc.nextInt();
         sc.nextLine();
         String smallUrl = "";
@@ -44,7 +44,11 @@ public class Main {
                         String fullurl = sc.nextLine();
                         Long rowID = psqlConn.insertURL(fullurl,currUserId);
                         String shortURL = B62EncDec.toBase62(rowID);
-                        System.out.println("Small URL for "+ fullurl +" is "+ "www.smallurl.com/" + shortURL+ "\n");
+                        if(rowID<1){
+                            System.out.println("Error, unable to add full url");
+                        } else {
+                            System.out.println("Success, Small URL for "+ fullurl +" is "+ "www.smallurl.com/" + shortURL+ "\n");
+                        }
 
                         break;
                     case '2':
